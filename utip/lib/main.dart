@@ -27,20 +27,102 @@ class UTip extends StatefulWidget {
 }
 
 class _UTipState extends State<UTip> {
+  int _personCount = 1;
+
+  // Methods
+  void increment() {
+    setState(() {
+      _personCount++;
+    });
+  }
+
+  void decrement() {
+    setState(() {
+      if (_personCount > 0) {
+        _personCount--;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+    final style = theme.textTheme.titleMedium!.copyWith(
+        color: theme.colorScheme.onPrimary, fontWeight: FontWeight.bold);
     return Scaffold(
         appBar: AppBar(title: Text('UTip')),
         body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-                padding: const EdgeInsets.all(8),
+            Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                    padding: const EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Column(
+                      children: [
+                        Text(
+                          "Total per person",
+                          style: style,
+                        ),
+                        Text(
+                          "\$23.89",
+                          style: style.copyWith(
+                              color: theme.colorScheme.onPrimary,
+                              fontSize: theme.textTheme.displaySmall?.fontSize),
+                        )
+                      ],
+                    ))),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
                 decoration: BoxDecoration(
-                    color: Colors.deepPurple,
-                    borderRadius: BorderRadius.circular(10)),
-                child: const Column(
-                  children: [Text("Total per person"), Text("\$23.89")],
-                ))
+                    borderRadius: BorderRadius.circular(5),
+                    border:
+                        Border.all(color: theme.colorScheme.primary, width: 2)),
+                child: Column(
+                  children: [
+                    TextField(
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            prefixIcon: Icon(Icons.attach_money),
+                            labelText: 'Bill Amount'),
+                        keyboardType: TextInputType.number,
+                        onChanged: (String value) {
+                          print('Value:  $value.');
+                        }),
+                    // Split bill area
+                    Row(
+                      children: [
+                        Text(
+                          'Split',
+                          style: theme.textTheme.titleMedium,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            IconButton(
+                                color: theme.colorScheme.primary,
+                                onPressed: decrement,
+                                icon: const Icon(Icons.remove)),
+                            Text(
+                              "$_personCount",
+                              style: theme.textTheme.titleMedium,
+                            ),
+                            IconButton(
+                                color: theme.colorScheme.primary,
+                                onPressed: increment,
+                                icon: const Icon(Icons.add))
+                          ],
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            )
           ],
         ));
   }
