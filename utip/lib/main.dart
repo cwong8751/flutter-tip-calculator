@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:utip/widgets/bill_amount_field.dart';
 import 'package:utip/widgets/person_counter.dart';
+import 'package:utip/widgets/tip_row.dart';
 import 'package:utip/widgets/tip_slider.dart';
+import 'package:utip/widgets/total_per_person.dart';
 
 void main() {
   runApp(const MyApp());
@@ -35,7 +37,7 @@ class _UTipState extends State<UTip> {
   double _billTotal = 100;
 
   double totalPerPerson() {
-    return ((_billTotal * (1 + _tipPercentage)) / _personCount).roundToDouble();
+    return ((_billTotal * (1 + _tipPercentage)) / _personCount);
   }
 
   double totalTip() {
@@ -70,27 +72,7 @@ class _UTipState extends State<UTip> {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                    padding: const EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.inversePrimary,
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Column(
-                      children: [
-                        Text(
-                          "Total per person",
-                          style: style,
-                        ),
-                        Text(
-                          "$total",
-                          style: style.copyWith(
-                              color: theme.colorScheme.onPrimary,
-                              fontSize: theme.textTheme.displaySmall?.fontSize),
-                        )
-                      ],
-                    ))),
+            TotalPerPerson(style: style, total: total, theme: theme),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Container(
@@ -110,38 +92,19 @@ class _UTipState extends State<UTip> {
                       },
                     ),
                     // Split bill area
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Split',
-                          style: theme.textTheme.titleMedium,
-                        ),
-                        PersonCounter(
-                          theme: theme,
-                          personCount: _personCount,
-                          onDecrement: decrement,
-                          onIncrement: increment,
-                        ),
-                      ],
+                    PersonCounter(
+                      theme: theme,
+                      personCount: _personCount,
+                      onDecrement: decrement,
+                      onIncrement: increment,
                     ),
                     // tip section
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Tip',
-                          style: theme.textTheme.titleMedium,
-                        ),
-                        Text(
-                          "$totalT",
-                          style: theme.textTheme.titleMedium,
-                        )
-                      ],
-                    ),
+                    TipRow(theme: theme, totalT: totalT),
 
                     // slider text
                     Text('${(_tipPercentage * 100).round()}%'),
+
+                    // tip slider
                     TipSlider(
                       tipPercentage: _tipPercentage,
                       onChanged: (double value) {

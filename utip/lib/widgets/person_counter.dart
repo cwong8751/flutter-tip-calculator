@@ -19,18 +19,26 @@ class PersonCounter extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        IconButton(
-            color: theme.colorScheme.primary,
-            onPressed: onDecrement,
-            icon: const Icon(Icons.remove)),
         Text(
-          "$_personCount",
+          'Split',
           style: theme.textTheme.titleMedium,
         ),
-        IconButton(
-            color: theme.colorScheme.primary,
-            onPressed: onIncrement,
-            icon: const Icon(Icons.add))
+        Row(
+          children: [
+            IconButton(
+                color: theme.colorScheme.primary,
+                onPressed: onDecrement,
+                icon: const Icon(Icons.remove)),
+            Text(
+              "$_personCount",
+              style: theme.textTheme.titleMedium,
+            ),
+            IconButton(
+                color: theme.colorScheme.primary,
+                onPressed: onIncrement,
+                icon: const Icon(Icons.add))
+          ],
+        )
       ],
     );
   }
