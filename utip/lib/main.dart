@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:utip/providers/TipCalculatorModel.dart';
 import 'package:utip/widgets/bill_amount_field.dart';
 import 'package:utip/widgets/person_counter.dart';
 import 'package:utip/widgets/tip_row.dart';
@@ -6,7 +8,8 @@ import 'package:utip/widgets/tip_slider.dart';
 import 'package:utip/widgets/total_per_person.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(create: (context) => TipCalculatorModel(),
+  child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -44,26 +47,11 @@ class _UTipState extends State<UTip> {
     return ((_billTotal * _tipPercentage));
   }
 
-  // Methods
-  void increment() {
-    setState(() {
-      _personCount++;
-    });
-  }
-
-  void decrement() {
-    setState(() {
-      if (_personCount > 1) {
-        _personCount--;
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final model = Provider.of<TipCalculatorModel>(context);
     var theme = Theme.of(context);
-    double total = totalPerPerson();
-    double totalT = totalTip();
+    
     final style = theme.textTheme.titleMedium!.copyWith(
         color: theme.colorScheme.onPrimary, fontWeight: FontWeight.bold);
 
@@ -72,7 +60,7 @@ class _UTipState extends State<UTip> {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TotalPerPerson(style: style, total: total, theme: theme),
+            TotalPerPerson(style: style, total: model.totalPerPerson, theme: theme),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Container(
@@ -84,33 +72,35 @@ class _UTipState extends State<UTip> {
                 child: Column(
                   children: [
                     BillAmountField(
-                      billAmount: _billTotal.toString(),
+                      billAmount: model.billTotal.toString(),
                       onChanged: (value) {
-                        setState(() {
-                          _billTotal = double.parse(value);
-                        });
+                        model.updateBillTotal(double.parse(value));
                       },
                     ),
                     // Split bill area
                     PersonCounter(
                       theme: theme,
-                      personCount: _personCount,
-                      onDecrement: decrement,
-                      onIncrement: increment,
+                      personCount: model.personCount,
+                      onDecrement: () {
+                        if(model.personCount > 1){
+                          model.updatePersonCount(model.personCount - 1);
+                        }
+                      },
+                      onIncrement: () {
+                        model.updatePersonCount(model.personCount + 1);
+                      },
                     ),
                     // tip section
-                    TipRow(theme: theme, totalT: totalT),
+                    TipRow(theme: theme, totalT: model.billTotal, percentage: model.tipPercentage,),
 
                     // slider text
-                    Text('${(_tipPercentage * 100).round()}%'),
+                    Text('${(model.tipPercentage * 100).round()}%'),
 
                     // tip slider
                     TipSlider(
-                      tipPercentage: _tipPercentage,
+                      tipPercentage: model.tipPercentage,
                       onChanged: (double value) {
-                        setState(() {
-                          _tipPercentage = value;
-                        });
+                       model.updateTipPercentage(value);
                       },
                     ),
                   ],
