@@ -1,28 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:utip/providers/ThemeProvider.dart';
 import 'package:utip/providers/TipCalculatorModel.dart';
 import 'package:utip/widgets/bill_amount_field.dart';
 import 'package:utip/widgets/person_counter.dart';
 import 'package:utip/widgets/tip_row.dart';
 import 'package:utip/widgets/tip_slider.dart';
+import 'package:utip/widgets/toggle_theme_button.dart';
 import 'package:utip/widgets/total_per_person.dart';
 
 void main() {
-  runApp(ChangeNotifierProvider(create: (context) => TipCalculatorModel(),
-  child: const MyApp()));
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (context) => TipCalculatorModel()),
+      ChangeNotifierProvider(create: (context) => ThemeProvider()),
+    ],
+    child: const MyApp()),
+  );
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
+  
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return MaterialApp(
         title: 'Flutter Demo',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
+        theme: themeProvider.currentTheme,
         home: const UTip());
   }
 }
@@ -49,6 +54,7 @@ class _UTipState extends State<UTip> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     final model = Provider.of<TipCalculatorModel>(context);
     var theme = Theme.of(context);
     
@@ -56,7 +62,9 @@ class _UTipState extends State<UTip> {
         color: theme.colorScheme.onPrimary, fontWeight: FontWeight.bold);
 
     return Scaffold(
-        appBar: AppBar(title: Text('UTip')),
+        appBar: AppBar(title: Text('UTip'), actions: [
+          ToggleThemeButton(),
+        ],),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
